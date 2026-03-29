@@ -35,6 +35,12 @@ export class Gelbooru extends GelbooruV020 {
     return '/user_avatars/honkonymous.png';
   }
 
+  protected getHeaders() {
+    return {
+      referer: 'https://gelbooru.com/'
+    };
+  }
+
   protected getThumbnailSelector(): string {
     // favorite
     // post list

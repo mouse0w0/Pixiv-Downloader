@@ -3,7 +3,6 @@ import { SiteInject } from '../base';
 import { logger } from '@/lib/logger';
 import { SankakuApi, type SankakuPool } from './api';
 import { SankakuParser } from './parser';
-import { SankakuDownloadConfig } from './downloadConfig';
 import { downloadSetting } from '@/lib/store/downloadSetting.svelte';
 import { downloader } from '@/lib/downloader';
 import { historyDb } from '@/lib/db';
@@ -14,6 +13,7 @@ import { ArtworkButton } from '@/lib/components/Button/artworkButton';
 import { regexp } from '@/lib/regExp';
 import { t } from '@/lib/i18n.svelte';
 import { PostValidState } from '../base/parser';
+import { BooruDownloadConfig } from '../base/downloadConfig';
 
 /** @default query */
 type SelectorMatchStrategy = 'query' | 'match' | 'both';
@@ -103,7 +103,7 @@ export class SankakuApp extends SiteInject {
   }
 
   protected getSupportedTemplate() {
-    return SankakuDownloadConfig.supportedTemplate;
+    return BooruDownloadConfig.supportedTemplate;
   }
 
   static get hostname(): string[] {
@@ -140,7 +140,7 @@ export class SankakuApp extends SiteInject {
 
     const mediaMeta = this.parser.buildMeta(postData, postUrl, tagDetail);
 
-    const downloadConfig = new SankakuDownloadConfig(mediaMeta).create({
+    const downloadConfig = new BooruDownloadConfig(mediaMeta).create({
       ...downloadSetting,
       setProgress: (progress: number) => {
         btn.setProgress(progress);
@@ -334,7 +334,7 @@ export class SankakuApp extends SiteInject {
     downloadArtworkByMeta: async (meta, signal) => {
       if (this.parser.isURLExpired(meta.src)) throw new Error('URL is expired.');
 
-      const downloadConfig = new SankakuDownloadConfig(meta).create({
+      const downloadConfig = new BooruDownloadConfig(meta).create({
         ...downloadSetting
       });
 

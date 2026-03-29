@@ -1,10 +1,4 @@
-import type { DownloadConfig } from '@/lib/downloader';
-import {
-  BooruDownloadConfig,
-  SupportedTemplate,
-  type OptionBase,
-  type TemplateData
-} from '../base/downloadConfig';
+import { BooruDownloadConfig, SupportedTemplate, type TemplateData } from '../base/downloadConfig';
 
 export class Rule34VaultDownloadConfig extends BooruDownloadConfig {
   static get supportedTemplate(): Partial<TemplateData> {
@@ -25,9 +19,5 @@ export class Rule34VaultDownloadConfig extends BooruDownloadConfig {
       date: this.createDate,
       score: String(this.score)
     };
-  }
-
-  create(option: OptionBase): DownloadConfig {
-    return super.create({ ...option, cfClearance: undefined });
   }
 }

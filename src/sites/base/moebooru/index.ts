@@ -43,6 +43,16 @@ export abstract class Moebooru extends SiteInject {
     return BooruDownloadConfig.supportedTemplate;
   }
 
+  protected getHeaders(): Record<string, string> | undefined {
+    if (userAuthentication.cf_clearance) {
+      return {
+        cookie: `cf_clearance=${userAuthentication.cf_clearance}`
+      };
+    }
+
+    return undefined;
+  }
+
   /**
    * register
    * https://github.com/moebooru/moebooru/blob/master/app/javascript/src/legacy/post.coffee#L286
@@ -89,7 +99,7 @@ export abstract class Moebooru extends SiteInject {
     downloadArtworkByMeta: async (meta, signal) => {
       const downloadConfig = new BooruDownloadConfig(meta).create({
         ...downloadSetting,
-        cfClearance: userAuthentication.cf_clearance || undefined
+        headers: this.getHeaders()
       });
 
       await downloader.download(downloadConfig, { signal });
@@ -325,7 +335,7 @@ export abstract class Moebooru extends SiteInject {
 
     const downloadConfig = new BooruDownloadConfig(mediaMeta).create({
       ...downloadSetting,
-      cfClearance: userAuthentication.cf_clearance || undefined,
+      headers: this.getHeaders(),
       setProgress: (progress: number) => {
         btn.setProgress(progress);
       }

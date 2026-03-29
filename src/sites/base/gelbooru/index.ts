@@ -38,6 +38,16 @@ export abstract class GelbooruV020 extends SiteInject {
     return '/favicon.ico';
   }
 
+  protected getHeaders(): Record<string, string> | undefined {
+    if (userAuthentication.cf_clearance) {
+      return {
+        cookie: `cf_clearance=${userAuthentication.cf_clearance}`
+      };
+    }
+
+    return undefined;
+  }
+
   #validityCheckFactory(
     checkValidity: (meta: Partial<GelbooruMeta>) => Promise<boolean>
   ): (postData: GelbooruHtmlPostDataV020) => Promise<PostValidState> {
@@ -58,7 +68,7 @@ export abstract class GelbooruV020 extends SiteInject {
     downloadArtworkByMeta: async (meta, signal) => {
       const downloadConfigs = new BooruDownloadConfig(meta).create({
         ...downloadSetting,
-        cfClearance: userAuthentication.cf_clearance || undefined
+        headers: this.getHeaders()
       });
 
       await downloader.download(downloadConfigs, { signal });
@@ -203,7 +213,7 @@ export abstract class GelbooruV020 extends SiteInject {
     const mediaMeta = this.parser.buildMeta(id, doc);
     const downloadConfig = new BooruDownloadConfig(mediaMeta).create({
       ...downloadSetting,
-      cfClearance: userAuthentication.cf_clearance || undefined,
+      headers: this.getHeaders(),
       setProgress: (progress: number) => {
         btn.setProgress(progress);
       }

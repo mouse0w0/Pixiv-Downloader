@@ -25,6 +25,7 @@ export type TemplateData = {
 
 export interface OptionBase extends DownloadSettingState {
   setProgress?: (progress: number) => void;
+  headers?: Record<string, string>;
 }
 
 export abstract class MediaDownloadConfig<T extends string | string[] = string> {
@@ -222,10 +223,6 @@ export abstract class MayBeMultiIllustsConfig extends MediaDownloadConfig<string
   abstract createBundle(option: OptionBase): DownloadConfig[];
 }
 
-interface BooruOption extends OptionBase {
-  cfClearance?: string;
-}
-
 export class BooruDownloadConfig extends MediaDownloadConfig {
   protected character: string;
   protected score: number;
@@ -247,12 +244,6 @@ export class BooruDownloadConfig extends MediaDownloadConfig {
     };
   }
 
-  protected getHeaders(cfClearance: string): Record<string, string> {
-    return {
-      cookie: `cf_clearance=${cfClearance}`
-    };
-  }
-
   protected getTemplateData(): Partial<TemplateData> {
     return {
       id: this.id,
@@ -265,18 +256,18 @@ export class BooruDownloadConfig extends MediaDownloadConfig {
     };
   }
 
-  create(option: BooruOption): DownloadConfig {
+  create(option: OptionBase): DownloadConfig {
     const {
       filenameTemplate,
       filenameConflictAction,
       directoryTemplate,
       useFileSystemAccessApi,
       setProgress,
-      cfClearance
+      headers
     } = option;
 
     return {
-      headers: cfClearance ? this.getHeaders(cfClearance) : undefined,
+      headers,
       taskId: this.getTaskId(),
       src: this.getSrc(),
       path: this.getSavePath(
