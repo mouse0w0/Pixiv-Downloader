@@ -21,13 +21,9 @@
   <header class="modal-header text-2xl font-bold">Pixiv Downloader {__VERSION__}</header>
 
   <article class="modal-body mt-4">
-    <h4 class=" text-xl mt-2">新增</h4>
-    <ul class="list-disc list-inside leading-loose">
-      <li>现在支持www.sankakucomplex.com | sankaku.app。</li>
-    </ul>
     <h4 class=" text-xl mt-2">修复</h4>
     <ul class="list-disc list-inside leading-loose">
-      <li>下载完成后按钮不显示已下载图标。</li>
+      <li>fix(gelbooru): Image broken due to missing referer.</li>
     </ul>
   </article>
 
