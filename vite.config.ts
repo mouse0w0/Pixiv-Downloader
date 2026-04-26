@@ -107,6 +107,7 @@ export default defineConfig({
           'https://unpkg.com/jszip@3.9.1/dist/jszip.min.js',
           'https://unpkg.com/gif.js@0.2.0/dist/gif.js',
           'https://unpkg.com/dayjs@1.11.13/dayjs.min.js',
+          'https://unpkg.com/jspdf@4.2.1/dist/jspdf.umd.min.js',
           // mp4-muxer and webm-muxer deps from unpkg are missing a ";" at the end of the code:
           // `if (typeof module === "object" && typeof module.exports === "object") Object.assign(module.exports, WebMMuxer)`.
           // This makes CSS side effects not run in Tampermonkey.
@@ -130,7 +131,8 @@ export default defineConfig({
           'gif.js': 'GIF',
           dayjs: 'dayjs',
           'mp4-muxer': 'Mp4Muxer',
-          'webm-muxer': 'WebMMuxer'
+          'webm-muxer': 'WebMMuxer',
+          jspdf: 'jspdf'
         },
         externalResource: {
           'gif.js/dist/gif.worker?raw': {

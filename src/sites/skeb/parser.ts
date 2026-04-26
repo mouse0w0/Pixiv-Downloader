@@ -29,10 +29,16 @@ export class SkebParser extends ParserBase {
     const srcs: string[] = [];
     const exts: string[] = [];
 
+    const isNovel = work.genre === 'novel';
+
     for (const preview of work.previews) {
       if (preview.url) {
         srcs.push(preview.url);
-        exts.push(this.#resolveExt(preview.url, preview.information?.extension));
+        if (isNovel && preview.information?.extension) {
+          exts.push(preview.information.extension.toLowerCase());
+        } else {
+          exts.push(this.#resolveExt(preview.url, preview.information?.extension));
+        }
       }
     }
 

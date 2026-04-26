@@ -65,6 +65,11 @@ export interface SkebPreviewInformation {
   transcoder: string;
 }
 
+export interface SkebNovelResponse {
+  text: string;
+  urls: string[];
+}
+
 export interface SkebWork extends SkebWorkListItem {
   id: number;
   extension: string;

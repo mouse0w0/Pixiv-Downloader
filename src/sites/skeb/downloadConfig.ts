@@ -6,6 +6,7 @@ import {
   type OptionBase
 } from '../base/downloadConfig';
 import type { DownloadConfig } from '@/lib/downloader';
+import { fetchNovelPdf } from './novelHelper';
 
 export class SkebDownloadConfig extends MayBeMultiIllustsConfig {
   protected userId: string;
@@ -61,7 +62,7 @@ export class SkebDownloadConfig extends MayBeMultiIllustsConfig {
     } = option;
     const index = 'index' in option ? option.index : 0;
 
-    return {
+    const config: DownloadConfig = {
       taskId: this.getTaskId(),
       src: this.getSrc(index),
       path: this.getSavePath(
@@ -75,6 +76,12 @@ export class SkebDownloadConfig extends MayBeMultiIllustsConfig {
       useFileSystemAccessApi,
       filenameConflictAction
     };
+
+    if (this.genre === 'novel') {
+      config.beforeFileSave = (blob, _cfg, signal) => this.#transformNovelBlob(blob, index, signal);
+    }
+
+    return config;
   }
 
   createMulti(option: OptionBase): DownloadConfig[] {
@@ -91,7 +98,7 @@ export class SkebDownloadConfig extends MayBeMultiIllustsConfig {
     const onFileSaved = setProgress ? this.getMultipleMediaDownloadCB(setProgress) : undefined;
 
     return this.src.map((src, i) => {
-      return {
+      const config: DownloadConfig = {
         taskId,
         src,
         path: this.getSavePath(
@@ -105,6 +112,12 @@ export class SkebDownloadConfig extends MayBeMultiIllustsConfig {
         useFileSystemAccessApi,
         filenameConflictAction
       };
+
+      if (this.genre === 'novel') {
+        config.beforeFileSave = (blob, _cfg, signal) => this.#transformNovelBlob(blob, i, signal);
+      }
+
+      return config;
     });
   }
 
@@ -145,7 +158,7 @@ export class SkebDownloadConfig extends MayBeMultiIllustsConfig {
       );
     });
 
-    return this.src.map((src, i) => {
+    const configs = this.src.map((src, i) => {
       return {
         taskId,
         src,
@@ -159,5 +172,38 @@ export class SkebDownloadConfig extends MayBeMultiIllustsConfig {
         filenameConflictAction
       };
     });
+
+    if (this.genre === 'novel') {
+      return configs.map((config, i) => {
+        const originalBeforeSave = config.beforeFileSave;
+        config.beforeFileSave = async (blob, cfg, signal) => {
+          const transformed = await this.#transformNovelBlob(blob, i, signal);
+          return originalBeforeSave?.(transformed, cfg, signal);
+        };
+        return config;
+      });
+    }
+
+    return configs;
+  }
+
+  async #transformNovelBlob(blob: Blob, index: number, signal?: AbortSignal): Promise<Blob> {
+    const ext = this.getExt(index);
+
+    try {
+      const json = JSON.parse(await blob.text());
+
+      if (ext === 'txt') {
+        return new Blob([json.text], { type: 'text/plain' });
+      }
+
+      if (ext === 'pdf' && json.urls?.length) {
+        return await fetchNovelPdf(json.urls, signal);
+      }
+    } catch {
+      // fall through
+    }
+
+    return blob;
   }
 }
