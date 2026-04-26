@@ -130,9 +130,9 @@ export default defineConfig({
           jszip: 'JSZip',
           'gif.js': 'GIF',
           dayjs: 'dayjs',
+          jspdf: 'jspdf',
           'mp4-muxer': 'Mp4Muxer',
-          'webm-muxer': 'WebMMuxer',
-          jspdf: 'jspdf'
+          'webm-muxer': 'WebMMuxer'
         },
         externalResource: {
           'gif.js/dist/gif.worker?raw': {
