@@ -99,6 +99,7 @@ export default defineConfig({
           'rule34.us',
           'sankakucomplex.com',
           'skeb.jp',
+          'fcdn.skeb.jp',
           'si.imgix.net'
         ],
         require: [

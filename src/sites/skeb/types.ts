@@ -19,7 +19,7 @@ export interface SkebSkill {
   default_amount: number;
 }
 
-export type SkebGenre = 'art' | 'voice' | 'novel' | 'video' | 'correction';
+export type SkebGenre = 'art' | 'comic' | 'voice' | 'novel' | 'video' | 'music' | 'correction';
 
 export interface SkebWorkListItem {
   path: string;

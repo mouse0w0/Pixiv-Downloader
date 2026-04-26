@@ -7,7 +7,6 @@ import { PostValidState } from '../base/parser';
 import { SkebApi } from './api';
 import { SkebDownloadConfig } from './downloadConfig';
 import { historyDb, type HistoryData } from '@/lib/db';
-import { regexp } from '@/lib/regExp';
 import type { TemplateData } from '../base/downloadConfig';
 import { t } from '@/lib/i18n.svelte';
 import { downloadSetting } from '@/lib/store/downloadSetting.svelte';
@@ -119,27 +118,64 @@ export class Skeb extends SiteInject {
         {
           id: 'allow_art',
           type: 'include',
-          name: () => t('downloader.category.filter.image'),
+          name: () => t('downloader.category.filter.skeb_art'),
           checked: true,
           fn(meta) {
-            if (meta.extendName === undefined) return false;
-            if (Array.isArray(meta.extendName)) {
-              return meta.extendName.some((ext) => regexp.imageExt.test(ext));
-            }
-            return regexp.imageExt.test(meta.extendName);
+            return meta.genre === 'art';
+          }
+        },
+        {
+          id: 'allow_comic',
+          type: 'include',
+          name: () => t('downloader.category.filter.skeb_comic'),
+          checked: true,
+          fn(meta) {
+            return meta.genre === 'comic';
+          }
+        },
+        {
+          id: 'allow_voice',
+          type: 'include',
+          name: () => t('downloader.category.filter.skeb_voice'),
+          checked: false,
+          fn(meta) {
+            return meta.genre === 'voice';
           }
         },
         {
           id: 'allow_video',
           type: 'include',
-          name: () => t('downloader.category.filter.video'),
+          name: () => t('downloader.category.filter.skeb_video'),
           checked: false,
           fn(meta) {
-            if (meta.extendName === undefined) return false;
-            if (Array.isArray(meta.extendName)) {
-              return meta.extendName.some((ext) => regexp.videoExt.test(ext));
-            }
-            return regexp.videoExt.test(meta.extendName);
+            return meta.genre === 'video';
+          }
+        },
+        {
+          id: 'allow_music',
+          type: 'include',
+          name: () => t('downloader.category.filter.skeb_music'),
+          checked: false,
+          fn(meta) {
+            return meta.genre === 'music';
+          }
+        },
+        {
+          id: 'allow_novel',
+          type: 'include',
+          name: () => t('downloader.category.filter.skeb_novel'),
+          checked: false,
+          fn(meta) {
+            return meta.genre === 'novel';
+          }
+        },
+        {
+          id: 'allow_correction',
+          type: 'include',
+          name: () => t('downloader.category.filter.skeb_correction'),
+          checked: false,
+          fn(meta) {
+            return meta.genre === 'correction';
           }
         }
       ],
@@ -245,13 +281,12 @@ export class Skeb extends SiteInject {
 
     const id = `${screenName}/${workNumber}`;
 
-    const images = document.querySelectorAll<HTMLElement>(
-      'div.image-column div.container > img[src*="si.imgix.net"]'
+    const containers = document.querySelectorAll<HTMLElement>(
+      'div.image-column div.container.mb-3'
     );
 
-    images.forEach((img, idx) => {
-      const container = img.closest<HTMLElement>('div.container') ?? img.parentElement;
-      if (!container || container.querySelector(ArtworkButton.tagNameLowerCase)) return;
+    containers.forEach((container, idx) => {
+      if (container.querySelector(ArtworkButton.tagNameLowerCase)) return;
 
       container.style.position = 'relative';
       container.appendChild(

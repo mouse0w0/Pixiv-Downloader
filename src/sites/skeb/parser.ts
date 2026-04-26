@@ -32,14 +32,8 @@ export class SkebParser extends ParserBase {
     for (const preview of work.previews) {
       if (preview.url) {
         srcs.push(preview.url);
-        const ext = this.#getExtFromUrl(preview.url);
-        exts.push(ext);
+        exts.push(this.#resolveExt(preview.url, preview.information?.extension));
       }
-    }
-
-    if (srcs.length === 0 && work.preview_url) {
-      srcs.push(work.preview_url);
-      exts.push(this.#getExtFromUrl(work.preview_url));
     }
 
     const src = srcs.length === 1 ? srcs[0] : srcs;
@@ -61,12 +55,8 @@ export class SkebParser extends ParserBase {
     };
   }
 
-  #getExtFromUrl(url: string): string {
-    try {
-      const fm = new URL(url).searchParams.get('fm');
-      return fm ?? 'webp';
-    } catch {
-      return 'webp';
-    }
+  #resolveExt(url: string, extension?: string): string {
+    const fm = new URL(url).searchParams.get('fm')?.toLowerCase();
+    return fm || extension?.toLowerCase() || 'webp';
   }
 }
